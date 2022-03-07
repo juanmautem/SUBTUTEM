@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.2
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-03-2022 a las 16:41:42
--- Versión del servidor: 10.4.13-MariaDB
--- Versión de PHP: 7.2.31
+-- Tiempo de generación: 07-03-2022 a las 16:53:56
+-- Versión del servidor: 10.4.21-MariaDB
+-- Versión de PHP: 8.0.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,31 +28,61 @@ SET time_zone = "+00:00";
 -- (Véase abajo para la vista actual)
 --
 CREATE TABLE `allusers` (
+`nIdUser` int(11)
+,`user` varchar(10)
+,`pass` varchar(50)
 );
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `documentos`
+-- Estructura de tabla para la tabla `catpersonas`
 --
--- Error leyendo la estructura de la tabla dblogin.documentos: #1932 - Table 'dblogin.documentos' doesn't exist in engine
--- Error leyendo datos de la tabla dblogin.documentos: #1064 - Algo está equivocado en su sintax cerca 'FROM `dblogin`.`documentos`' en la linea 1
+
+CREATE TABLE `catpersonas` (
+  `nIdPersona` int(11) NOT NULL,
+  `txtNombreP` varchar(30) NOT NULL,
+  `txtApellidos` varchar(60) DEFAULT NULL,
+  `txtRFC` varchar(15) DEFAULT NULL,
+  `txtCURP` varchar(20) DEFAULT NULL,
+  `txtNSS` varchar(10) DEFAULT NULL,
+  `feNacimiento` date DEFAULT NULL,
+  `bActivo` tinyint(1) DEFAULT 0,
+  `fhCreatedAt` datetime DEFAULT current_timestamp(),
+  `fhUpdatedAt` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `noticias`
+-- Estructura de tabla para la tabla `cattipop`
 --
--- Error leyendo la estructura de la tabla dblogin.noticias: #1932 - Table 'dblogin.noticias' doesn't exist in engine
--- Error leyendo datos de la tabla dblogin.noticias: #1064 - Algo está equivocado en su sintax cerca 'FROM `dblogin`.`noticias`' en la linea 1
+
+CREATE TABLE `cattipop` (
+  `nIdTipoP` int(11) NOT NULL,
+  `txtTipoP` varchar(10) NOT NULL,
+  `txtDescripcion` varchar(50) NOT NULL,
+  `bActivo` tinyint(1) DEFAULT 0,
+  `fhCreatedAt` datetime DEFAULT current_timestamp(),
+  `fhUpdatedAt` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `personas`
+-- Estructura de tabla para la tabla `catusers`
 --
--- Error leyendo la estructura de la tabla dblogin.personas: #1932 - Table 'dblogin.personas' doesn't exist in engine
--- Error leyendo datos de la tabla dblogin.personas: #1064 - Algo está equivocado en su sintax cerca 'FROM `dblogin`.`personas`' en la linea 1
+
+CREATE TABLE `catusers` (
+  `nIdUser` int(11) NOT NULL,
+  `fkIdPersona` int(11) NOT NULL,
+  `fkidTipoP` int(11) NOT NULL,
+  `txtUser` varchar(10) NOT NULL,
+  `txtPass` varchar(50) NOT NULL,
+  `bActivo` tinyint(1) DEFAULT 0,
+  `fhCreatedAt` datetime DEFAULT current_timestamp(),
+  `fhUpdatedAt` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -61,23 +91,16 @@ CREATE TABLE `allusers` (
 -- (Véase abajo para la vista actual)
 --
 CREATE TABLE `userdata` (
-);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `users`
---
--- Error leyendo la estructura de la tabla dblogin.users: #1932 - Table 'dblogin.users' doesn't exist in engine
--- Error leyendo datos de la tabla dblogin.users: #1064 - Algo está equivocado en su sintax cerca 'FROM `dblogin`.`users`' en la linea 1
-
--- --------------------------------------------------------
-
---
--- Estructura Stand-in para la vista `vwuserdocuments`
--- (Véase abajo para la vista actual)
---
-CREATE TABLE `vwuserdocuments` (
+`nIdUser` int(11)
+,`txtName` varchar(30)
+,`txtLastName` varchar(60)
+,`txtRFC` varchar(15)
+,`txtCURP` varchar(20)
+,`txtNSS` varchar(10)
+,`feNacimiento` date
+,`userActive` tinyint(1)
+,`nIdTipoP` int(11)
+,`txtTipoP` varchar(10)
 );
 
 -- --------------------------------------------------------
@@ -87,7 +110,7 @@ CREATE TABLE `vwuserdocuments` (
 --
 DROP TABLE IF EXISTS `allusers`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `allusers`  AS  select `users`.`userId` AS `userId`,`users`.`user` AS `user`,`users`.`pass` AS `pass` from `users` where `users`.`bActive` = 1 ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `allusers`  AS SELECT `catusers`.`nIdUser` AS `nIdUser`, `catusers`.`txtUser` AS `user`, `catusers`.`txtPass` AS `pass` FROM `catusers` ;
 
 -- --------------------------------------------------------
 
@@ -96,16 +119,51 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `userdata`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `userdata`  AS  select `p`.`personId` AS `personId`,`u`.`userId` AS `userId`,`p`.`personName` AS `Name`,`p`.`personLastName` AS `Lastname`,`p`.`personRFC` AS `RFC`,`p`.`bActive` AS `personActive`,`u`.`user` AS `user`,`u`.`userType` AS `userType`,`u`.`bActive` AS `userActive` from (`personas` `p` join `users` `u` on(`u`.`personId` = `p`.`personId`)) ;
-
--- --------------------------------------------------------
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `userdata`  AS SELECT `u`.`nIdUser` AS `nIdUser`, `p`.`txtNombreP` AS `txtName`, `p`.`txtApellidos` AS `txtLastName`, `p`.`txtRFC` AS `txtRFC`, `p`.`txtCURP` AS `txtCURP`, `p`.`txtNSS` AS `txtNSS`, `p`.`feNacimiento` AS `feNacimiento`, `u`.`bActivo` AS `userActive`, `t`.`nIdTipoP` AS `nIdTipoP`, `t`.`txtTipoP` AS `txtTipoP` FROM ((`catpersonas` `p` join `catusers` `u` on(`p`.`nIdPersona` = `u`.`fkIdPersona`)) join `cattipop` `t` on(`u`.`fkidTipoP` = `t`.`nIdTipoP`)) ;
 
 --
--- Estructura para la vista `vwuserdocuments`
+-- Índices para tablas volcadas
 --
-DROP TABLE IF EXISTS `vwuserdocuments`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vwuserdocuments`  AS  select `d`.`documentID` AS `documentID`,`d`.`documentName` AS `Document`,`d`.`documentURL` AS `URL`,`d`.`documentType` AS `Type`,`d`.`fCreatedAt` AS `fCreatedAt`,`p`.`personId` AS `personId`,concat(`p`.`Name`,' ',`p`.`Lastname`) AS `Editor`,`p`.`user` AS `user`,`p`.`userType` AS `userType` from (`documentos` `d` join `userdata` `p` on(`d`.`personId` = `p`.`personId`)) ;
+--
+-- Indices de la tabla `catpersonas`
+--
+ALTER TABLE `catpersonas`
+  ADD PRIMARY KEY (`nIdPersona`);
+
+--
+-- Indices de la tabla `cattipop`
+--
+ALTER TABLE `cattipop`
+  ADD PRIMARY KEY (`nIdTipoP`);
+
+--
+-- Indices de la tabla `catusers`
+--
+ALTER TABLE `catusers`
+  ADD PRIMARY KEY (`nIdUser`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `catpersonas`
+--
+ALTER TABLE `catpersonas`
+  MODIFY `nIdPersona` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `cattipop`
+--
+ALTER TABLE `cattipop`
+  MODIFY `nIdTipoP` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catusers`
+--
+ALTER TABLE `catusers`
+  MODIFY `nIdUser` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
