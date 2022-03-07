@@ -14,7 +14,7 @@ class ModLogin extends CI_Model
 		if($result->num_rows() > 0){
 			$usersData = $result->result_array();
 			//print_r($usersData[0]);
-			$userData = $this->db->query("SELECT * FROM userdata WHERE userId = ". $usersData[0]['userId']);
+			$userData = $this->db->query("SELECT * FROM userData WHERE userId = ". $usersData[0]['userId']);
 			if($userData->num_rows() > 0){
 				$uData = $userData->result_array();
 				return $uData[0];

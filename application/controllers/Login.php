@@ -30,7 +30,7 @@ class Login extends CI_Controller {
 			'txtName'=> $data['Name'],
 			'txtLastName'=> $data['Lastname'],
 			'txtRFC'=> $data['RFC'],
-			'tstUserType'=> $data['userType']
+			'txtUserType'=> $data['userType']
 		);
 		$this->session->set_userdata($sessionUsr);
 		if($data['userType'] = 'Administrador'){

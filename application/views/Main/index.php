@@ -14,6 +14,9 @@
 		text-shadow: 2px 2px 2px lightgray;
 		padding: 10px;
 	}
+	h1{
+		font-size: 3vw;
+	}
 </style>
 
 <main>
